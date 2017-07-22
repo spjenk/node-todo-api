@@ -80,9 +80,33 @@ describe('GET /todos/:id', () => {
         .get(`/todos/${todos[0]._id.toHexString()}`)
         .expect(200)
         .expect((res) => {
-            console.log(res.body.todo);
             expect(res.body.todo.text).toBe(todos[0].text);
         }).end(done);
+    });
+
+    it('should get 404 if pass invalud id', (done) => {
+        request(app)
+        .get('/todos/59704560e916eb3267477777')
+        .expect(404)
+        .end(done);
+    });
+})
+
+describe('DELETE /todos/:id', () => {
+    it('should delete todos doc', (done) => {
+        request(app)
+        .delete(`/todos/${todos[0]._id.toHexString()}`)
+        .expect(200)
+        .end((err, res) => {
+            if (err) {
+                return done(err);
+            }
+
+            Todo.find().then((todos) => {
+                expect(todos.length).toBe(1);
+                done();
+            }).catch((e) => done(e));
+        });
     });
 
     it('should get 404 if pass invalud id', (done) => {
